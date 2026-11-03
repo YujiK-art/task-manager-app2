@@ -1,45 +1,35 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Resources;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class TaskRequest extends FormRequest
+class TaskResource extends JsonResource
 {
     /**
-     * リクエストの認可
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
      */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    /**
-     * バリデーションルール
-     */
-    public function rules(): array
+    public function toArray(Request $request): array
     {
         return [
-            'category_id' => 'required|exists:categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'priority' => 'required|integer|in:1,2,3',
-        ];
-    }
-
-    /**
-     * バリデーションメッセージ
-     */
-    public function messages(): array
-    {
-        return [
-            'category_id.required' => 'カテゴリーを選択してください。',
-            'category_id.exists' => '選択されたカテゴリーは存在しません。',
-            'title.required' => 'タイトルは必須です。',
-            'title.max' => 'タイトルは255文字以内で入力してください。',
-            'description.max' => '説明は1000文字以内で入力してください。',
-            'priority.required' => '優先度を選択してください。',
-            'priority.in' => '優先度は1〜3の値を選択してください。',
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'priority' => $this->priority,
+            'priority_label' => $this->priority_label,
+            'category' => [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+            ],
+            'user' => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+            ],
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }
